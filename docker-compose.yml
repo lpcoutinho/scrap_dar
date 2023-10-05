@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: scraper:latest
+    container_name: scraper
+    ports:
+      - "80:80"
+    restart: always
