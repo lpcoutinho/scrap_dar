@@ -14,7 +14,7 @@ from loguru import logger
 logger.add("app.log", rotation="500 MB", level="INFO")
 
 # pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
-pdf_dir = '/app/pdf'
+pdf_dir = '/home/ubuntu/scrap_dar'
 
 class GetDar:
     def __init__(self):
@@ -221,7 +221,8 @@ class GetDar:
             inscricao_input.clear()
             inscricao_input.send_keys(inscricao)
             time.sleep(2)  # Aguarde para que os resultados sejam carregados (ajuste conforme necessário)
-
+            
+            logger.info(f'Resolvendo o captcha')
             # Aguardar pelo seletor "solved" para subir
             WebDriverWait(self.driver, 120).until(lambda x: x.find_element(By.CSS_SELECTOR,'.antigate_solver.solved'))
 
@@ -230,7 +231,10 @@ class GetDar:
 
             self.tempo_resolucao_captcha = tempo_apos_resolucao_captcha - init
             logger.info(f"Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
-
+        except:
+            logger.error(f'Houve um erro na resolução do captcha')
+        
+        try:
             # Botão "Consultar"
             botao_xpath='//*[@id="containerPrincipal"]/div/app-emissao-dar-iptu/shared-page/shared-page-content/div/mat-card/mat-card-footer/button'
             botao_consultar = self.driver.find_element(By.XPATH, botao_xpath)
