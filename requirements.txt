@@ -1,2 +1,5 @@
 fastapi 
 uvicorn
+selenium
+pandas
+loguru
