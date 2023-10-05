@@ -13,8 +13,8 @@ from loguru import logger
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
 
-# pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
-pdf_dir = '/home/ubuntu/scrap_dar'
+pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
+# pdf_dir = '/home/ubuntu/scrap_dar'
 
 class GetDar:
     def __init__(self):
@@ -40,7 +40,7 @@ class GetDar:
         
         if not os.path.exists('data/performance_total_time.csv'):
             self.dados_performance_total_time.to_csv('data/performance_total_time.csv', index=False)
-    
+
     def init_driver(self):
         """
         Inicializa o driver do Chrome para a automação do scraping.
@@ -101,7 +101,7 @@ class GetDar:
         options = webdriver.ChromeOptions()
         # options.add_argument("--headless")
         options.add_argument("--no-sandbox")
-        # options.add_extension('./plugin.zip')
+        options.add_extension('./plugin.zip')
         prefs = {
             # "download.default_directory": "/pdf",  # Define o diretório padrão de download
             "download.default_directory": f"{pdf_dir}",  # Define o diretório padrão de download
@@ -224,7 +224,7 @@ class GetDar:
             
             logger.info(f'Resolvendo o captcha')
             # Aguardar pelo seletor "solved" para subir
-            WebDriverWait(self.driver, 120).until(lambda x: x.find_element(By.CSS_SELECTOR,'.antigate_solver.solved'))
+            WebDriverWait(self.driver, 180).until(lambda x: x.find_element(By.CSS_SELECTOR,'.antigate_solver.solved'))
 
             # Registrar o tempo após a resolução do Captcha
             tempo_apos_resolucao_captcha = time.time()
@@ -233,6 +233,7 @@ class GetDar:
             logger.info(f"Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
         except:
             logger.error(f'Houve um erro na resolução do captcha')
+            
         
         try:
             # Botão "Consultar"
@@ -442,14 +443,22 @@ class GetDar:
 
             for inscricao in numeros_inscricao:
                 self.driver.get(url)
-                self.fill_and_scrape(inscricao)
-                self.show_data(inscricao,'2023')
-                time.sleep(3)
+                try:
+                    self.fill_and_scrape(inscricao)
+                    self.show_data(inscricao,'2023')
+                    time.sleep(3)
+                except:
+                    pass
+                
                 
                 self.driver.get(url)
-                self.change_exercicio()
-                self.fill_and_scrape(inscricao)
-                self.show_data(inscricao,'anteriores')
-                time.sleep(3)
+                try:
+                    self.change_exercicio()
+                    self.fill_and_scrape(inscricao)
+                    self.show_data(inscricao,'anteriores')
+                    time.sleep(3)
+                except:
+                    pass
+                
         finally:
             self.close_driver()
