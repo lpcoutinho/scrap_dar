@@ -1,10 +1,12 @@
 import csv
-from datetime import datetime
 import os
 import zipfile
+from datetime import datetime
+
 import loguru
 
-def registrar_tempo_total(tempo_total, nome_arquivo='data/performance_total_time.csv'):
+
+def registrar_tempo_total(tempo_total, nome_arquivo="data/performance_total_time.csv"):
     """
     Registra o tempo total e a hora atual em um arquivo CSV.
 
@@ -13,9 +15,10 @@ def registrar_tempo_total(tempo_total, nome_arquivo='data/performance_total_time
         nome_arquivo (str): O nome do arquivo CSV onde o tempo será registrado.
     """
     hora_atual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(nome_arquivo, mode='a', newline='') as file:
-        writer = csv.writer(file, delimiter=';')
+    with open(nome_arquivo, mode="a", newline="") as file:
+        writer = csv.writer(file, delimiter=";")
         writer.writerow([hora_atual, tempo_total])
+
 
 def zip_compress(directory_path, zip_file_path):
     """
@@ -29,7 +32,7 @@ def zip_compress(directory_path, zip_file_path):
         None
     """
     try:
-        with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for root, dirs, files in os.walk(directory_path):
                 for file in files:
                     file_path = os.path.join(root, file)
@@ -41,7 +44,9 @@ def zip_compress(directory_path, zip_file_path):
     except Exception as e:
         print(f"Erro ao comprimir a pasta: {str(e)}")
 
+
 import os
+
 
 def listar_arquivos_em_pasta(pasta):
     """
@@ -58,7 +63,11 @@ def listar_arquivos_em_pasta(pasta):
         arquivos = os.listdir(pasta)
 
         # Filtre apenas os arquivos (excluindo diretórios)
-        arquivos = [arquivo for arquivo in arquivos if os.path.isfile(os.path.join(pasta, arquivo))]
+        arquivos = [
+            arquivo
+            for arquivo in arquivos
+            if os.path.isfile(os.path.join(pasta, arquivo))
+        ]
 
         return arquivos
     except Exception as e:
