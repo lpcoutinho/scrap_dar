@@ -57,7 +57,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 6. Configure o Nginx
+### 6. Crie o arquivo .env e preencha com sua chave API do *anti-captcha.com*
+
+Você pode consultar o exemplo em *.env.example*
+
+```bash
+sudo nano .env
+```
+
+### 7. Configure o Nginx
 
 Nginx é um servidor web que será usado para servir a API do Robô DAR.
 
