@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from loguru import logger
 
 from getDar import GetDar
-from utils import listar_arquivos_em_pasta, registrar_tempo_total, zip_compress
+from utils import remover_arquivos_em_pasta, registrar_tempo_total, zip_compress
 
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
@@ -49,6 +49,8 @@ async def upload_file(file: UploadFile):
 @app.get("/scrap")
 def scrap():
     html_file_path = "templates/pdf_download.html"
+    pasta_para_limpar = "pdf"
+
     try:
         excel_file_path = f"uploads/consulta.xlsx"  # Caminho completo para o arquivo Excel na pasta 'uploads'
         print(excel_file_path)
@@ -57,11 +59,12 @@ def scrap():
             raise HTTPException(
                 status_code=404, detail="O arquivo Excel não foi encontrado."
             )
-        print("existe arquivo")
         # Carregue o arquivo Excel usando Pandas
         df = pd.read_excel(excel_file_path)  # Leia o arquivo Excel
         lista_inscricoes = df["Inscrições"].tolist()  # Extraia a coluna como uma lista
 
+        remover_arquivos_em_pasta(pasta_para_limpar) # remove tudo do diretório pdf/
+        
         # Registrar o tempo de início
         tempo_inicio = time.time()
         logger.info("Iniciar Raspagem de dados")

@@ -52,6 +52,13 @@ def listar_arquivos_em_pasta(pasta):
 
     Returns:
         List[str]: Uma lista contendo os nomes dos arquivos na pasta.
+        
+    Raises:
+        OSError: Se ocorrer um erro ao acessar a pasta.
+        
+    Returns:
+        List[str]: Uma lista contendo os nomes dos arquivos na pasta.
+
     """
     try:
         # Use a função listdir do módulo os para listar os arquivos na pasta
@@ -65,6 +72,42 @@ def listar_arquivos_em_pasta(pasta):
         ]
 
         return arquivos
-    except Exception as e:
+    except OSError as e:
         print(f"Erro ao listar arquivos na pasta: {str(e)}")
         return []
+
+
+def remover_arquivos_em_pasta(pasta):
+    """
+    Remove todos os arquivos de uma pasta especificada.
+
+    Args:
+        pasta (str): O caminho da pasta da qual deseja remover os arquivos.
+
+    Raises:
+        OSError: Se ocorrer um erro ao acessar a pasta ou remover os arquivos.
+
+    """
+    try:
+        # Verifica se a pasta existe
+        if os.path.exists(pasta):
+            # Obtém a lista de arquivos na pasta
+            arquivos = os.listdir(pasta)
+
+            # Itera sobre a lista de arquivos e os remove
+            for arquivo in arquivos:
+                caminho_arquivo = os.path.join(pasta, arquivo)
+                
+                # Verifica se é um arquivo (não remove pastas)
+                if os.path.isfile(caminho_arquivo):
+                    os.remove(caminho_arquivo)
+                else:
+                    print(f"{caminho_arquivo} não é um arquivo e não será removido.")
+
+            print("Todos os arquivos foram removidos com sucesso.")
+        else:
+            print(f"A pasta '{pasta}' não existe.")
+    except OSError as e:
+        print(f"Ocorreu um erro: {str(e)}")
+
+
