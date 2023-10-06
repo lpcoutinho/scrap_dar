@@ -3,10 +3,16 @@ from fastapi.responses import FileResponse, RedirectResponse
 from getDar import GetDar
 import time
 from loguru import logger
-from utils import registrar_tempo_total
+from utils import listar_arquivos_em_pasta, registrar_tempo_total
 from fastapi.exceptions import HTTPException
 import pandas as pd
+from fastapi.responses import JSONResponse
 import os
+import shutil
+import zipfile
+import requests
+import tempfile
+from utils import zip_compress
 
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
@@ -53,6 +59,7 @@ async def upload_file(file: UploadFile):
 
 @app.get("/scrap")
 def scrap():
+    html_file_path = "templates/pdf_download.html"
     try:
         # Verifique se 'dados' contém um caminho de arquivo válido
         excel_file_path = f"uploads/consulta.xlsx"  # Caminho completo para o arquivo Excel na pasta 'uploads'
@@ -64,8 +71,6 @@ def scrap():
         # Carregue o arquivo Excel usando Pandas
         df = pd.read_excel(excel_file_path)  # Leia o arquivo Excel
         lista_inscricoes = df['Inscrições'].tolist()  # Extraia a coluna como uma lista
-
-        print(lista_inscricoes)
         
          # Registrar o tempo de início
         tempo_inicio = time.time()
@@ -92,14 +97,40 @@ def scrap():
 
         # Após a leitura dos dados, remova o arquivo Excel
         os.remove(excel_file_path)
-
-        # Resto do código permanece o mesmo
-
+        
+        logger.info('Comprimindo arquivos')
+        directory_to_compress = "pdf"
+        output_zip_file = "pdf.zip"
+        zip_compress(directory_to_compress, output_zip_file)
+        logger.info('Compressão concluida')
+        
+        logger.warning(f'Raspagem de dados completa!')
         # Retornar uma resposta com as informações processadas
-        return {"message": "Operação concluída com sucesso", "lista_inscricoes": lista_inscricoes}
-    
+        return FileResponse(html_file_path, media_type="text/html")
+        
+        # pasta_pdf = "pdf"
+        # lista_arquivos_pdf = listar_arquivos_em_pasta(pasta_pdf)
+        
+        # # Retorna Json com nome dos arquivos pdf e indica o próximo template
+        # redirect_url = "templates/pdf_download.html"
+        # return JSONResponse(content={"message": "Operação concluída com sucesso", "lista_arquivos_pdf": lista_arquivos_pdf, "redirect_url": redirect_url}, status_code=200)
+            
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="O arquivo Excel não foi encontrado.")
     except Exception as e:
         # Lidar com outros erros e exceções
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+
+@app.get("/download_pdf_zip")
+def download_pdf_zip():
+    try:
+        # Verifique se o arquivo ZIP solicitado existe no diretório raiz
+        zip_file_path = "pdf.zip"
+        if not os.path.exists(zip_file_path):
+            raise HTTPException(status_code=404, detail="O arquivo ZIP não foi encontrado.")
+        
+        # Faça o download do arquivo ZIP
+        return FileResponse(zip_file_path, headers={"Content-Disposition": f"attachment; filename={zip_file_path}"})
+
+    except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")

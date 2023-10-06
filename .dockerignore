@@ -1,8 +1,0 @@
-__pycache__
-venv/
-plugin/
-data/*csv
-pdf/*.pdf
-*.zip
-*.pem
-*.log

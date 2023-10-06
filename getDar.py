@@ -9,6 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 from loguru import logger
+from fastapi.responses import FileResponse
 
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
@@ -175,7 +176,7 @@ class GetDar:
         Returns:
             None
         """
-        logger.warning('Raspagem de dados completa!')
+        logger.warning(f'Raspagem dos dados de {inscricao} completa!')
         logger.info(f"Número de inscrição: {inscricao}")
         logger.info(f'Exercício: {exercicio}')
         logger.info(f"Tempo para baixar o plugin: {self.tempo_download_plugin} segundos")
@@ -356,12 +357,14 @@ class GetDar:
                     logger.info(f'* Razão social: {nome_output}')
                     logger.info(f'* Ano: {ano_output}')
                     logger.info(f'* Endereço: {endereco_output}')
-                
+
+                    logger.info(f'Pegando PDF {indice}')
                     # Download PDF
                     pdf_element = elemento.find_element(By.XPATH, xpath_pdf_button)
                     pdf_element.click()
                     time.sleep(1)
                     
+                    logger.info('Pegando código de barras')
                     # Cod Barras
                     cod_bar_button = elemento.find_element(By.XPATH, xpath_cod_button)
                     cod_bar_button.click()
@@ -428,12 +431,16 @@ class GetDar:
                     botao_fechar.click()
                     time.sleep(2)
                     
+                    logger.info('Renomeando arquivo PDF')
                     # Gerar o nome do arquivo PDF com base nas informações
                     nome_arquivo_pdf = f"{pdf_dir}/{inscricao_output}_{ano_output}_{cota_output}.pdf"
 
                     # Renomear o arquivo PDF após o download
-                    os.rename(f"{pdf_dir}/RelatorioDAR.pdf", nome_arquivo_pdf)
-        
+                    novo_nome = os.rename(f"{pdf_dir}/RelatorioDAR.pdf", nome_arquivo_pdf)
+                    
+                    print(novo_nome)    
+                    FileResponse(novo_nome, filename='teste.pdf')
+                    
                     novos_dados = {'Inscricao': inscricao_output ,'Ano': ano_output, 'DAR': True,'Nome': nome_output, 'Endereço': endereco_output, 'Cota': cota_output, 'Valor': valor_output, 'Multa': multa_output, 'Juros': juros_output, 'Outros': outros_output, 'ValorTotal': valor_total, 'Cod_Barras': cod_bar_output, 'PDF_Name': nome_arquivo_pdf}
                     # Atualizar o arquivo CSV
                     self.atualizar_dados(novos_dados)
