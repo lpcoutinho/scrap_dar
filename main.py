@@ -1,11 +1,7 @@
 import os
-import shutil
-import tempfile
 import time
-import zipfile
 
 import pandas as pd
-import requests
 from fastapi import FastAPI, File, Query, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -22,15 +18,13 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    # return {"message": "Bem-vindo ao Robô que captura DARs!","O scraper":"localhost/scrap"}
-    # Caminho completo para o arquivo HTML que você deseja servir
+    # Caminho completo para o arquivo HTML que será exibido
     html_file_path = "templates/home.html"
 
     # Retorna o arquivo HTML usando FileResponse
     return FileResponse(html_file_path, media_type="text/html")
 
 
-# @app.post("/uploadfile")
 @app.post("/uploadfile")
 async def upload_file(file: UploadFile):
     html_file_path = "templates/consultar.html"
@@ -39,31 +33,23 @@ async def upload_file(file: UploadFile):
         if not file:
             raise HTTPException(status_code=400, detail="Nenhum arquivo foi enviado.")
 
-        # Gerar um nome de arquivo único com base no horário atual
+        # Gerar e salvar um novo nome
         new_file_name = f"uploads/consulta.xlsx"
-
-        # Salvar o arquivo com o novo nome
         with open(new_file_name, "wb") as f:
             f.write(file.file.read())
 
-        # Retorna o novo nome de arquivo
-        # return {"message": f"Arquivo '{new_file_name}' enviado com sucesso"}
+        # Muda para a página 'consultar'
         return FileResponse(html_file_path, media_type="text/html")
 
     except Exception as e:
         # Lidar com erros e exceções
         raise HTTPException(status_code=500, detail=str(e))
 
-    except Exception as e:
-        # Lidar com erros e exceções
-        return HTTPException(status_code=500, detail=str(e))
-
 
 @app.get("/scrap")
 def scrap():
     html_file_path = "templates/pdf_download.html"
     try:
-        # Verifique se 'dados' contém um caminho de arquivo válido
         excel_file_path = f"uploads/consulta.xlsx"  # Caminho completo para o arquivo Excel na pasta 'uploads'
         print(excel_file_path)
         # Verifique se o arquivo existe

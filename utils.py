@@ -3,8 +3,6 @@ import os
 import zipfile
 from datetime import datetime
 
-import loguru
-
 
 def registrar_tempo_total(tempo_total, nome_arquivo="data/performance_total_time.csv"):
     """
@@ -43,9 +41,6 @@ def zip_compress(directory_path, zip_file_path):
 
     except Exception as e:
         print(f"Erro ao comprimir a pasta: {str(e)}")
-
-
-import os
 
 
 def listar_arquivos_em_pasta(pasta):
