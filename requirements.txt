@@ -4,3 +4,4 @@ selenium
 pandas
 loguru
 python-multipart
+openpyxl

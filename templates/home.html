@@ -2,14 +2,20 @@
 <html>
 <body>
 
-<h2>Envio de Arquivo</h2>
+<h2>Robô de DARs</h2>
+Envie um arquivo excel com a lista de inscrições a serem consultadas.<br><br>
+1. Envie um arquivo excel com apenas uma coluna, onde a célula A1=Inscrições<br>
+2. Clique em consultar<br><br>
 
 <form action="uploadfile/" method="post" enctype="multipart/form-data">
-  Selecione um arquivo para enviar:
-  <input type="file" name="file">
+  Selecione um arquivo para enviar (apenas .xlsx):
+  <input type="file" name="file" accept=".xlsx" required>
   <input type="submit" value="Enviar Arquivo">
-</form>
+</form><br>
 
+<!-- Div para exibir a mensagem de erro -->
+<div id="errorMessage" style="display: none; color: red;">
+</div>
 
 </body>
 </html>
