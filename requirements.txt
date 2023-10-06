@@ -5,3 +5,4 @@ pandas
 loguru
 python-multipart
 openpyxl
+python-decouple

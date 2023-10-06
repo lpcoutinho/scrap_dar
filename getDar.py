@@ -5,6 +5,7 @@ import zipfile
 from pathlib import Path
 
 import pandas as pd
+from decouple import config
 from fastapi.responses import FileResponse
 from loguru import logger
 from selenium import webdriver
@@ -12,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+API_KEY = config('API_KEY')
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
 
@@ -69,8 +71,8 @@ class GetDar:
         performance_csv = "data/performance.csv"
         if not os.path.exists(performance_csv):
             self.dados_performance.to_csv(performance_csv, index=False)
-            logger.info(f"{dados_csv} criado com sucesso!")
-        logger.info(f"{dados_csv} verificado!")
+            logger.info(f"{performance_csv} criado com sucesso!")
+        logger.info(f"{performance_csv} verificado!")
 
         total_time_csv = "data/performance_total_time.csv"
         if not os.path.exists(total_time_csv):
@@ -115,7 +117,7 @@ class GetDar:
                 f.extractall("plugin")
 
         # Define a chave da API no arquivo de configuração do plugin
-        api_key = "3f6496391630e35dff64c09607c4b729"
+        api_key = API_KEY
         file = Path("./plugin/js/config_ac_api_key.js")
         file.write_text(
             file.read_text().replace(
@@ -545,7 +547,6 @@ class GetDar:
                     )
 
                     print(novo_nome)
-                    FileResponse(novo_nome, filename="teste.pdf")
 
                     novos_dados = {
                         "Inscricao": inscricao_output,

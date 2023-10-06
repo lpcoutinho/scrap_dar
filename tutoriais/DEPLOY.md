@@ -8,7 +8,21 @@ O Robô DAR é um aplicativo que coleta dados de DARs do Distrito Federal. Este 
 
 - Acesse o Console AWS e crie uma nova instância EC2 seguindo as configurações recomendadas.
 
-### 2. Atualize e instale as dependências do projeto
+### 2. Clone o repositório
+
+```bash
+# Clone o repositório do projeto
+git clone https://github.com/lpcoutinho/scrap_dar.git
+```
+
+Caso queira encurtar o próximo passo navegue até o diretório do projeto e execute o script `./setup.sh`:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+### 3. Atualize e instale as dependências do projeto
 
 ```bash
 # Atualize o sistema e instale as dependências necessárias
@@ -24,13 +38,6 @@ sudo apt-get install -f
 
 # Remova o arquivo de instalação do Chrome
 rm google-chrome-stable_current_amd64.deb
-```
-
-### 3. Clone o repositório
-
-```bash
-# Clone o repositório do projeto
-git clone https://github.com/lpcoutinho/scrap_dar.git
 ```
 
 ### 4. Crie e ative um ambiente virtual
@@ -71,6 +78,7 @@ server {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 10800s; # Aumentar o tempo limite para resposta
     }
 }
 ```
@@ -84,7 +92,15 @@ Lembre-se de substituir `<seu-endereço-de-IP-ou-DNS>` pelo endereço correto.
 sudo systemctl reload nginx
 ```
 
-### 8. Inicie a API
+### 8. Crie diretórios necessários
+
+Caso não tenha os diretórios *data, pdf e uploads* crie com:
+
+```bash
+mkdir data pdf uploads
+```
+
+### 9. Inicie a API
 
 - Crie uma sessão Tmux para manter a API em execução:
 
