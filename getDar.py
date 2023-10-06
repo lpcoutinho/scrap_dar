@@ -14,7 +14,7 @@ from loguru import logger
 logger.add("app.log", rotation="500 MB", level="INFO")
 
 pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
-# pdf_dir = '/home/ubuntu/scrap_dar'
+# pdf_dir = '/home/ubuntu/scrap_dar/pdf'
 
 class GetDar:
     def __init__(self):
@@ -30,16 +30,25 @@ class GetDar:
         self.dados_performance = pd.DataFrame(columns=['Download_plugin', 'Resolve_Captcha', 'Consulta_DAR', 'Get_DAR', 'Scrap_Time', 'Total_Parcial'])
         self.dados_performance_total_time = pd.DataFrame(columns=['Data','Total_time'])
         
-        logger.info("Verifica se os arquivos CSV existem e cria se não existirem")
+        logger.info("Verificando arquivos CSV")
         
-        if not os.path.exists('data/dados.csv'):
-            self.dados_df.to_csv('data/dados.csv', index=False)
+        dados_csv = 'data/dados.csv'
+        if not os.path.exists(dados_csv):
+            self.dados_df.to_csv(dados_csv, index=False)
+            logger.info(f"{dados_csv} criado com sucesso!")
+        logger.info(f"{dados_csv} verificado!")
         
-        if not os.path.exists('data/performance.csv'):
-            self.dados_performance.to_csv('data/performance.csv', index=False)
+        performance_csv = 'data/performance.csv'
+        if not os.path.exists(performance_csv):
+            self.dados_performance.to_csv(performance_csv, index=False)
+            logger.info(f"{dados_csv} criado com sucesso!")
+        logger.info(f"{dados_csv} verificado!")
         
-        if not os.path.exists('data/performance_total_time.csv'):
-            self.dados_performance_total_time.to_csv('data/performance_total_time.csv', index=False)
+        total_time_csv = 'data/performance_total_time.csv'
+        if not os.path.exists(total_time_csv):
+            self.dados_performance_total_time.to_csv(total_time_csv, index=False)
+            logger.info(f"{total_time_csv} criado com sucesso!")
+        logger.info(f"{total_time_csv} verificado!")
 
     def init_driver(self):
         """
@@ -95,7 +104,7 @@ class GetDar:
         self.tempo_download_plugin = tempo_apos_download_plugin - init_driver_time
         
         logger.info(f"Tempo para instalar o plugin: {self.tempo_download_plugin} segundos")
-        logger.info('Configurando e iniciando o Chrome.')
+        logger.info('Configurando o Chrome.')
         
         # Configura as opções de inicialização do navegador Chrome
         options = webdriver.ChromeOptions()
@@ -116,7 +125,13 @@ class GetDar:
         # Inicializa o driver do Chrome com as opções configuradas
         self.driver = webdriver.Chrome(options=options)
         
-        return self.tempo_download_plugin
+        tempo_apos_chrome_config = time.time()
+        self.tempo_chrome_config = tempo_apos_chrome_config - tempo_apos_download_plugin
+        
+        logger.info(f"Tempo para configurar o Chrome: {self.tempo_chrome_config} segundos")
+        logger.info('Iniciando o Chrome.')
+        
+        return self.tempo_download_plugin, self.tempo_chrome_config
 
     def close_driver(self):
         """
@@ -162,7 +177,8 @@ class GetDar:
         """
         logger.info(f"* Número de inscrição: {inscricao}")
         logger.info(f'* Exercício: {exercicio}')
-        # logger.info(f"Tempo para baixar o plugin: {self.tempo_download_plugin} segundos")
+        logger.info(f"Tempo para baixar o plugin: {self.tempo_download_plugin} segundos")
+        logger.info(f"Tempo para configurar o Chrome: {self.tempo_chrome_config} segundos")
         logger.info(f"* Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
 
     def atualizar_dados(self, novos_dados):
@@ -224,7 +240,7 @@ class GetDar:
             
             logger.info(f'Resolvendo o captcha')
             # Aguardar pelo seletor "solved" para subir
-            WebDriverWait(self.driver, 180).until(lambda x: x.find_element(By.CSS_SELECTOR,'.antigate_solver.solved'))
+            WebDriverWait(self.driver, 120).until(lambda x: x.find_element(By.CSS_SELECTOR,'.antigate_solver.solved'))
 
             # Registrar o tempo após a resolução do Captcha
             tempo_apos_resolucao_captcha = time.time()
@@ -233,7 +249,7 @@ class GetDar:
             logger.info(f"Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
         except:
             logger.error(f'Houve um erro na resolução do captcha')
-            
+            self.driver.save_screenshot('ERROR_captcha.png')
         
         try:
             # Botão "Consultar"
@@ -246,7 +262,7 @@ class GetDar:
             
             # Aguardar um pouco para a página carregar
             time.sleep(2)
-            self.driver.save_screenshot('click.png')
+
             tempo_apos_esperar_consultar = time.time()
 
             self.tempo_consulta = tempo_apos_esperar_consultar - tempo_apos_clicar_consultar
@@ -423,6 +439,7 @@ class GetDar:
                 self.atualizar_performance(performance)
                 
             return self.tempo_resolucao_captcha, self.tempo_consulta
+        
         except Exception as e:
             logger.info(f"Ocorreu um erro ao processar a inscrição {inscricao_output}: {str(e)}")
 
@@ -440,9 +457,10 @@ class GetDar:
         try:
             self.init_driver()
             url = "https://ww1.receita.fazenda.df.gov.br/emissao-segunda-via/iptu"
-
+            
             for inscricao in numeros_inscricao:
                 self.driver.get(url)
+                self.driver.save_screenshot('init_chrome.png')
                 try:
                     self.fill_and_scrape(inscricao)
                     self.show_data(inscricao,'2023')
@@ -451,14 +469,14 @@ class GetDar:
                     pass
                 
                 
-                self.driver.get(url)
-                try:
-                    self.change_exercicio()
-                    self.fill_and_scrape(inscricao)
-                    self.show_data(inscricao,'anteriores')
-                    time.sleep(3)
-                except:
-                    pass
+                # self.driver.get(url)
+                # try:
+                #     self.change_exercicio()
+                #     self.fill_and_scrape(inscricao)
+                #     self.show_data(inscricao,'anteriores')
+                #     time.sleep(3)
+                # except:
+                #     pass
                 
         finally:
             self.close_driver()

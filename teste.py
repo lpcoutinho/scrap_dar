@@ -1,9 +1,13 @@
 from getDar import GetDar
 import time
+from loguru import logger
+
+# Configurar o logger para escrever logs em um arquivo chamado "app.log"
+logger.add("teste.log", rotation="500 MB", level="INFO")
 
 # Registrar o tempo de início
 tempo_inicio = time.time()
-print(10*'*','Iniciar Raspagem de dados',10*'*')
+logger.warning('Iniciar Raspagem de dados')
 
 lista = ['132465']
 lista = ['51502038', '51502046', '51502054', '51502062']
@@ -12,7 +16,7 @@ lista = ['51502038', '51502046', '51502054', '51502062']
 lista_formatada = ', '.join(lista)
 
 # Imprima a lista formatada
-print(f'* Os números de inscrição requeridos são: {lista_formatada}')
+logger.info(f'Os números de inscrição requeridos são: {lista_formatada}')
 
 getdar = GetDar()
 getdar.get_dar(numeros_inscricao=lista)
@@ -21,7 +25,7 @@ getdar.get_dar(numeros_inscricao=lista)
 tempo_total = time.time() - tempo_inicio
 
 # Exibir o tempo total gasto
-print(f"* Tempo total gasto em toda a operação: {tempo_total} segundos")
+logger.info(f"Tempo total gasto em toda a operação: {tempo_total} segundos")
 
 # Registrar o tempo total e a hora atual usando a função em utils.py
 #registrar_tempo_total(tempo_total)
