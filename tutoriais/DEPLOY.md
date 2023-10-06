@@ -2,80 +2,103 @@
 
 ## Deploy em AWS EC2
 
-1. Crie uma nova instância EC2
-2. Atualize e instale as dependências do projeto
+O Robô DAR é um aplicativo que coleta dados de DARs do Distrito Federal. Este tutorial mostra como realizar deploya do Robô DAR em uma instância EC2 da AWS.
 
-    ```bash
-    sudo apt-get update 
-    sudo apt-get install -y wget gnupg unzip python3-venv xvfb nginx
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb 
-    sudo dpkg -i google-chrome-stable_current_amd64.deb 
-    sudo apt-get install -f
-    rm google-chrome-stable_current_amd64.deb
-    ```
+### 1. Crie uma nova instância EC2
 
-3. Clone o repositório:
+- Acesse o Console AWS e crie uma nova instância EC2 seguindo as configurações recomendadas.
 
-    ```bash
-    git clone https://github.com/lpcoutinho/scrap_dar.git
-    ```
+### 2. Atualize e instale as dependências do projeto
 
-4. Crie e ative um ambiente virtual
+```bash
+# Atualize o sistema e instale as dependências necessárias
+sudo apt-get update
+sudo apt-get install -y wget gnupg unzip python3-venv xvfb nginx
 
-    ```bash
-    python3 -m venv venv
-    . venv/bin/activate
-    ```
+# Baixe e instale o Google Chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
 
-5. Instale as bibliotecas do projeto
+# Resolva possíveis dependências quebradas
+sudo apt-get install -f
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+# Remova o arquivo de instalação do Chrome
+rm google-chrome-stable_current_amd64.deb
+```
 
-6. Inicie a API
+### 3. Clone o repositório
 
-    ```bash
-    xvfb-run uvicorn main:app --host 0.0.0.0 --port 8000
-    ```
+```bash
+# Clone o repositório do projeto
+git clone https://github.com/lpcoutinho/scrap_dar.git
+```
 
-7. Configure Nginx
+### 4. Crie e ative um ambiente virtual
 
-    Crie o arquivo de configuração
+```bash
+# Crie um ambiente virtual
+python3 -m venv venv
 
-    ```bash
-    sudo nano /etc/nginx/conf.d/fastapi.conf
-    ```
+# Ative o ambiente virtual
+source venv/bin/activate
+```
 
-    Edite
+### 5. Instale as bibliotecas do projeto
 
-    ```bash
-    server {
-        listen 80;
-        server_name 52.91.224.206;
-    
-        location / {
-            proxy_pass http://127.0.0.1:8000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-        }
+```bash
+# Instale as bibliotecas Python necessárias
+pip install -r requirements.txt
+```
+
+### 6. Configure o Nginx
+
+Nginx é um servidor web que será usado para servir a API do Robô DAR.
+
+- Crie o arquivo de configuração do Nginx:
+
+```bash
+sudo nano /etc/nginx/conf.d/fastapi.conf
+```
+
+- Edite o arquivo para configurar o proxy:
+
+```nginx
+server {
+    listen 80;
+    server_name <seu-endereço-de-IP-ou-DNS>;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
-    ```
+}
+```
 
-8. Reinicie Nginx
+Lembre-se de substituir `<seu-endereço-de-IP-ou-DNS>` pelo endereço correto.
 
-    ```bash
-    
-    ```
+### 7. Reinicie o Nginx
 
-9. Crie um terminal Tmux e rode a api dentro dele
+```bash
+# Recarregue a configuração do Nginx
+sudo systemctl reload nginx
+```
 
-    ```bash
-    
-    ```
+### 8. Inicie a API
 
-10. Texto
+- Crie uma sessão Tmux para manter a API em execução:
 
-    ```bash
-    
-    ```
+```bash
+# Crie uma sessão Tmux
+tmux new -s fastapi
+```
+
+- Dentro da sessão Tmux, inicie a API usando o Xvfb:
+
+```bash
+xvfb-run uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+### Conclusão
+
+A API do Robô DAR está agora disponível para utilização. Você pode acessá-la através do endereço IP ou DNS da sua instância EC2. Certifique-se de que sua instância EC2 tenha as portas 80 e 8000 abertas nas configurações de segurança do grupo.
