@@ -4,9 +4,6 @@ format:
 	@isort .
 	@black .
 
-create_venv:
-	python3 -m venv venv && pip install -r requirements.txt
-
 tmux_create:
 	tmux new -s fastapi
 
