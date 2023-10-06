@@ -95,7 +95,7 @@ def scrap():
 
         logger.info("Comprimindo arquivos")
         directory_to_compress = "pdf"
-        output_zip_file = "pdf.zip"
+        output_zip_file = "data/pdf.zip"
         zip_compress(directory_to_compress, output_zip_file)
         logger.info("Compressão concluida")
 
