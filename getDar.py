@@ -13,8 +13,8 @@ from loguru import logger
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
 
-pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
-# pdf_dir = '/home/ubuntu/scrap_dar/pdf'
+# pdf_dir = '/home/luiz/projects/scrap_dar/pdf'
+pdf_dir = '/home/ubuntu/scrap_dar/pdf'
 
 class GetDar:
     def __init__(self):
@@ -175,11 +175,12 @@ class GetDar:
         Returns:
             None
         """
-        logger.info(f"* Número de inscrição: {inscricao}")
-        logger.info(f'* Exercício: {exercicio}')
+        logger.warning('Raspagem de dados completa!')
+        logger.info(f"Número de inscrição: {inscricao}")
+        logger.info(f'Exercício: {exercicio}')
         logger.info(f"Tempo para baixar o plugin: {self.tempo_download_plugin} segundos")
         logger.info(f"Tempo para configurar o Chrome: {self.tempo_chrome_config} segundos")
-        logger.info(f"* Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
+        logger.info(f"Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
 
     def atualizar_dados(self, novos_dados):
         """
@@ -247,10 +248,11 @@ class GetDar:
 
             self.tempo_resolucao_captcha = tempo_apos_resolucao_captcha - init
             logger.info(f"Tempo para resolver o Captcha: {self.tempo_resolucao_captcha} segundos")
-        except:
-            logger.error(f'Houve um erro na resolução do captcha')
-            self.driver.save_screenshot('ERROR_captcha.png')
-        
+        except Exception as e:
+            logger.error(f'Erro na resolução do captcha:', e)
+            print("O tipo do erro é:", type(e))
+            # self.driver.save_screenshot('ERROR_captcha.png')
+
         try:
             # Botão "Consultar"
             botao_xpath='//*[@id="containerPrincipal"]/div/app-emissao-dar-iptu/shared-page/shared-page-content/div/mat-card/mat-card-footer/button'
@@ -369,26 +371,34 @@ class GetDar:
                         class_cod_bar = 'mat-dialog-content'
                         cod_bar_element = self.driver.find_element(By.CLASS_NAME,class_cod_bar)
                         cod_bar_output = cod_bar_element.text.strip()
-                    except:
-                        logger.info(f'* Não pegou com: 1 {class_cod_bar}')
+                    except Exception as e:
+                        logger.error("Ocorreu um erro:", e)
+                        logger.error("O tipo do erro é:", type(e))
+                        logger.error(f'* Não pegou com: 1 {class_cod_bar}')
                         try:
                             class_cod_bar = "mat-dialog-content"
                             cod_bar_element = self.driver.find_element(By.CLASS_NAME, class_cod_bar)
                             cod_bar_output = cod_bar_element.text.strip()
-                        except:
-                            logger.info(f'* Não pegou com: 2 {class_cod_bar}')
+                        except Exception as e:
+                            logger.error("Ocorreu um erro:", e)
+                            logger.error("O tipo do erro é:", type(e))
+                            logger.error(f'* Não pegou com: 2 {class_cod_bar}')
                             try:
                                 class_cod_bar = "mat-dialog-content.mat-dialog-content"
                                 cod_bar_element = self.driver.find_element(By.CSS_SELECTOR, class_cod_bar)
                                 cod_bar_output = cod_bar_element.text.strip()
-                            except:
-                                logger.info(f'* Não pegou com: 3 {class_cod_bar}')
+                            except Exception as e:
+                                logger.error("Ocorreu um erro:", e)
+                                logger.error("O tipo do erro é:", type(e))
+                                logger.error(f'* Não pegou com: 3 {class_cod_bar}')
                                 try:
                                     class_cod_bar = '//mat-dialog-content'
                                     cod_bar_element = self.driver.find_element(By.XPATH, class_cod_bar)
                                     cod_bar_output = cod_bar_element.text.strip()
-                                except:
-                                    logger.info(f'* Não pegou com: 4 {class_cod_bar}')
+                                except Exception as e:
+                                    logger.error("Ocorreu um erro:", e)
+                                    logger.error("O tipo do erro é:", type(e))
+                                    logger.error(f'* Não pegou com: 4 {class_cod_bar}')
 
                                 # Encontre o índice onde o texto deve ser cortado
                                 text_remove = "O número do código de barras referente ao débito selecionado, já foi copiado para área de transferência."
@@ -460,12 +470,14 @@ class GetDar:
             
             for inscricao in numeros_inscricao:
                 self.driver.get(url)
-                self.driver.save_screenshot('init_chrome.png')
+                # self.driver.save_screenshot('init_chrome.png')
                 try:
                     self.fill_and_scrape(inscricao)
                     self.show_data(inscricao,'2023')
                     time.sleep(3)
-                except:
+                except Exception as e:
+                    print("Ocorreu um erro:", e)
+                    print("O tipo do erro é:", type(e))
                     pass
                 
                 
@@ -475,7 +487,9 @@ class GetDar:
                 #     self.fill_and_scrape(inscricao)
                 #     self.show_data(inscricao,'anteriores')
                 #     time.sleep(3)
-                # except:
+                # except Exception as e:
+                    print("Ocorreu um erro:", e)
+                    print("O tipo do erro é:", type(e))
                 #     pass
                 
         finally:
