@@ -5,4 +5,4 @@ pandas
 loguru
 python-multipart
 openpyxl
-dotenv
+python-dotenv
