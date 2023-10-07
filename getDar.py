@@ -23,8 +23,8 @@ print(API_KEY)
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
 
-# pdf_dir = "/home/luiz/projects/scrap_dar/pdf"
-pdf_dir = '/home/ubuntu/scrap_dar/pdf'
+pdf_dir = "/home/luiz/projects/scrap_dar/pdf"
+# pdf_dir = '/home/ubuntu/scrap_dar/pdf'
 
 
 class GetDar:

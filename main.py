@@ -56,13 +56,17 @@ def scrap():
         print(excel_file_path)
         # Verifique se o arquivo existe
         if not os.path.exists(excel_file_path):
+            logger.error('O arquivo Excel não foi encontrado.')
             raise HTTPException(
                 status_code=404, detail="O arquivo Excel não foi encontrado."
             )
+        
         # Carregue o arquivo Excel usando Pandas
+        logger.info('Lendo arquivo Excel')
         df = pd.read_excel(excel_file_path)  # Leia o arquivo Excel
         lista_inscricoes = df["Inscrições"].tolist()  # Extraia a coluna como uma lista
 
+        logger.info('Limpando a pasat data')
         remover_arquivos_em_pasta(pasta_para_limpar) # remove tudo do diretório pdf/
         
         # Registrar o tempo de início
@@ -120,7 +124,7 @@ def scrap():
             status_code=500, detail=f"Erro interno do servidor: {str(e)}"
         )
 
-
+    
 @app.get("/download_pdf_zip")
 def download_pdf_zip():
     try:
