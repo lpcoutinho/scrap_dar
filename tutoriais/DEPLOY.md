@@ -105,7 +105,7 @@ sudo systemctl reload nginx
 Caso não tenha os diretórios *data, pdf e uploads* crie com:
 
 ```bash
-mkdir data pdf uploads
+mkdir data pdf uploads zip
 ```
 
 ### 9. Inicie a API
