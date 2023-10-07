@@ -623,15 +623,15 @@ class GetDar:
                     print("O tipo do erro é:", type(e))
                     pass
 
-                    # self.driver.get(url)
-                    # try:
-                    #     self.change_exercicio()
-                    #     self.fill_and_scrape(inscricao)
-                    #     self.show_data(inscricao,'anteriores')
-                    #     time.sleep(3)
-                    # except Exception as e:
-                    print("Ocorreu um erro:", e)
-                    print("O tipo do erro é:", type(e))
+                    self.driver.get(url)
+                    try:
+                        self.change_exercicio()
+                        self.fill_and_scrape(inscricao)
+                        self.show_data(inscricao,'anteriores')
+                        time.sleep(3)
+                    except Exception as e:
+                        print("Ocorreu um erro:", e)
+                        print("O tipo do erro é:", type(e))
                 #     pass
 
         finally:
