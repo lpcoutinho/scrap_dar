@@ -95,7 +95,7 @@ def scrap():
 
         logger.info("Comprimindo arquivos")
         directory_to_compress = "pdf"
-        output_zip_file = "data/pdf.zip"
+        output_zip_file = "pdf.zip"
         zip_compress(directory_to_compress, output_zip_file)
         logger.info("Compressão concluida")
 
@@ -125,13 +125,15 @@ def scrap():
 def download_pdf_zip():
     try:
         # Verifique se o arquivo ZIP solicitado existe no diretório raiz
-        zip_file_path = "pdf.zip"
+        zip_file_path = "data/pdf.zip"
         if not os.path.exists(zip_file_path):
+            logger.error('O arquivo ZIP não foi encontrado.')
             raise HTTPException(
                 status_code=404, detail="O arquivo ZIP não foi encontrado."
             )
 
         # Faça o download do arquivo ZIP
+        logger.info('Arquivo ZIP enviado.')
         return FileResponse(
             zip_file_path,
             headers={"Content-Disposition": f"attachment; filename={zip_file_path}"},

@@ -5,7 +5,6 @@ import zipfile
 from pathlib import Path
 
 import pandas as pd
-from decouple import config
 from fastapi.responses import FileResponse
 from loguru import logger
 from selenium import webdriver
@@ -13,12 +12,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-API_KEY = config('API_KEY')
+from dotenv import load_dotenv
+
+# Carregar as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+API_KEY = os.getenv('API_KEY')
+
+print(API_KEY)
 # Configurar o logger para escrever logs em um arquivo chamado "app.log"
 logger.add("app.log", rotation="500 MB", level="INFO")
 
-pdf_dir = "/home/luiz/projects/scrap_dar/pdf"
-# pdf_dir = '/home/ubuntu/scrap_dar/pdf'
+# pdf_dir = "/home/luiz/projects/scrap_dar/pdf"
+pdf_dir = '/home/ubuntu/scrap_dar/pdf'
 
 
 class GetDar:
