@@ -8,9 +8,16 @@ Envie um arquivo excel com a lista de inscrições a serem consultadas.<br><br>
 2. Clique em consultar<br><br>
 
 <!-- Botão de consulta -->
-<form id="consultForm" action="scrap/" method="get" style="display: true;">
+<form id="consultForm" action="scrap/" method="get">
   <input type="submit" value="Consultar">
 </form>
+
+<!-- Script JavaScript para atualizar a página -->
+<script>
+document.getElementById("consultForm").addEventListener("submit", function() {
+  location.reload();
+});
+</script>
 
 </body>
 </html>
