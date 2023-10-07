@@ -28,15 +28,21 @@ def read_root():
 @app.post("/uploadfile")
 async def upload_file(file: UploadFile):
     html_file_path = "templates/consultar.html"
+    
+    logger.info('Limpando a pasta uploads')
+    remover_arquivos_em_pasta('uploads')
+    
     try:
         # Verifique se o arquivo foi enviado
         if not file:
+            logger.error('Arquivo não foi enviado')
             raise HTTPException(status_code=400, detail="Nenhum arquivo foi enviado.")
 
         # Gerar e salvar um novo nome
         new_file_name = f"uploads/consulta.xlsx"
         with open(new_file_name, "wb") as f:
             f.write(file.file.read())
+            logger.info('Arquivo enviado e configurado')
 
         # Muda para a página 'consultar'
         return FileResponse(html_file_path, media_type="text/html")
@@ -49,8 +55,10 @@ async def upload_file(file: UploadFile):
 @app.get("/scrap")
 def scrap():
     html_file_path = "templates/pdf_download.html"
-    pasta_para_limpar = "pdf"
 
+    logger.info('Limpando a pasta pdf')
+    remover_arquivos_em_pasta('pdf') # remove tudo dos diretório pdf/
+    
     try:
         excel_file_path = f"uploads/consulta.xlsx"  # Caminho completo para o arquivo Excel na pasta 'uploads'
         print(excel_file_path)
@@ -65,9 +73,6 @@ def scrap():
         logger.info('Lendo arquivo Excel')
         df = pd.read_excel(excel_file_path)  # Leia o arquivo Excel
         lista_inscricoes = df["Inscrições"].tolist()  # Extraia a coluna como uma lista
-
-        logger.info('Limpando a pasat data')
-        remover_arquivos_em_pasta(pasta_para_limpar) # remove tudo do diretório pdf/
         
         # Registrar o tempo de início
         tempo_inicio = time.time()
@@ -129,7 +134,7 @@ def scrap():
 def download_pdf_zip():
     try:
         # Verifique se o arquivo ZIP solicitado existe no diretório raiz
-        zip_file_path = "data/pdf.zip"
+        zip_file_path = "pdf/pdf.zip"
         if not os.path.exists(zip_file_path):
             logger.error('O arquivo ZIP não foi encontrado.')
             raise HTTPException(
