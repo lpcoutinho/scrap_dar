@@ -58,6 +58,7 @@ def scrap():
 
     logger.info('Limpando a pasta pdf')
     remover_arquivos_em_pasta('pdf') # remove tudo dos diretório pdf/
+    remover_arquivos_em_pasta('zip') # remove tudo dos diretório pdf/
     
     try:
         excel_file_path = f"uploads/consulta.xlsx"  # Caminho completo para o arquivo Excel na pasta 'uploads'
@@ -104,7 +105,7 @@ def scrap():
 
         logger.info("Comprimindo arquivos")
         directory_to_compress = "pdf"
-        output_zip_file = "pdf.zip"
+        output_zip_file = "zip/pdf.zip"
         zip_compress(directory_to_compress, output_zip_file)
         logger.info("Compressão concluida")
 
@@ -134,7 +135,7 @@ def scrap():
 def download_pdf_zip():
     try:
         # Verifique se o arquivo ZIP solicitado existe no diretório raiz
-        zip_file_path = "pdf/pdf.zip"
+        zip_file_path = "zip/pdf.zip"
         if not os.path.exists(zip_file_path):
             logger.error('O arquivo ZIP não foi encontrado.')
             raise HTTPException(
