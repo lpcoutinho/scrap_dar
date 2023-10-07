@@ -15,7 +15,7 @@ sudo apt-get install -f
 rm google-chrome-stable_current_amd64.deb
 
 # Cria os diretórios necessários para o projeto
-mkdir data pdf uploads
+mkdir data pdf uploads zip
 
 # Informe que a instalação foi concluída
 echo "Instalação concluída com sucesso!"
