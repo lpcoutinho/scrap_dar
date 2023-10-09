@@ -155,7 +155,6 @@ class GetDar:
         options.add_argument("--no-sandbox")
         options.add_extension("./plugin.zip")
         prefs = {
-            # "download.default_directory": "/pdf",  # Define o diretório padrão de download
             "download.default_directory": f"{pdf_dir}",  # Define o diretório padrão de download
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,

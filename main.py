@@ -2,9 +2,9 @@ import os
 import time
 
 import pandas as pd
-from fastapi import FastAPI, File, Query, UploadFile
+from fastapi import FastAPI, File, Query, UploadFile, Request
 from fastapi.exceptions import HTTPException
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from loguru import logger
 
 from getDar import GetDar
@@ -52,8 +52,8 @@ async def upload_file(file: UploadFile):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/scrap")
-def scrap():
+@app.get("/scrap_list")
+def scrap_list():
     html_file_path = "templates/pdf_download.html"
 
     logger.info('Limpando a pasta pdf')
@@ -103,8 +103,9 @@ def scrap():
         # Após a leitura dos dados, remova o arquivo Excel
         os.remove(excel_file_path)
 
+        # Comprimindo arquivos
         logger.info("Comprimindo arquivos")
-        directory_to_compress = "pdf"
+        directory_to_compress = "pdf/"
         output_zip_file = "zip/pdf.zip"
         zip_compress(directory_to_compress, output_zip_file)
         logger.info("Compressão concluida")
@@ -150,6 +151,40 @@ def download_pdf_zip():
         )
 
     except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Erro interno do servidor: {str(e)}"
+        )
+
+@app.get("/scrap")
+def scrap(request: Request):
+    n_inscricao = request.query_params.get("n_inscricao")
+    html_file_path = "templates/pdf_download.html"
+
+    logger.info('Limpando a pasta pdf')
+    remover_arquivos_em_pasta('pdf') # remove tudo dos diretório pdf/
+    remover_arquivos_em_pasta('zip') # remove tudo dos diretório pdf/
+    
+    try:
+        # Registrar o tempo de início
+        tempo_inicio = time.time()
+        logger.info("Iniciar Raspagem de dados")
+        
+        getdar = GetDar()
+        getdar.get_dar([n_inscricao])
+
+        # Comprimindo arquivos
+        logger.info("Comprimindo arquivos")
+        directory_to_compress = "pdf/"
+        output_zip_file = "zip/pdf.zip"
+        zip_compress(directory_to_compress, output_zip_file)
+        logger.info("Compressão concluida")
+
+        logger.warning(f"Raspagem de dados completa!")
+
+        return FileResponse(html_file_path, media_type="text/html")
+    
+    except Exception as e:
+        # Lidar com outros erros e exceções
         raise HTTPException(
             status_code=500, detail=f"Erro interno do servidor: {str(e)}"
         )

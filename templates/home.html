@@ -3,16 +3,33 @@
 <body>
 
 <h2>Robô de DARs</h2>
+Pesquise por IPTUs em atraso.
+Você pode realizar uma consulta individual ou em grupo.
+
+<h3>Consultar por Número de Inscrição:</h3>
+
+1. Digite o número de inscrição <br><br>
+2. Clique em consultar.<br><br>
+3. Aguarde até o redirecionamento. <br><br>
+
+<form action="scrap/" method="get">
+  Insira o número de inscrição:
+  <input type="text" name="n_inscricao" required>
+  <input type="submit" value="Consultar">
+</form>
+
+<h3>Consultar por carga em arquivo *.xlsx:</h3>
+
 Envie um arquivo excel com a lista de inscrições a serem consultadas.<br><br>
-1. Envie um arquivo excel com apenas uma coluna, onde a célula A1=Inscrições<br>
-2. Clique em consultar<br><br>
+1. Envie um arquivo excel com apenas uma coluna, onde a célula A1=Inscrições<br><br>
+2. Clique em enviar. <br><br>
+3. Aguarde até o redirecionamento. <br><br>
 
 <form action="uploadfile/" method="post" enctype="multipart/form-data">
   Selecione um arquivo para enviar (apenas .xlsx):
   <input type="file" name="file" accept=".xlsx" required>
   <input type="submit" value="Enviar Arquivo">
 </form><br>
-
 
 </body>
 </html>
